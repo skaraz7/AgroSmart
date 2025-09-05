@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroSmart - Guía de Desarrollo</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-seedling"></i> AgroSmart</h1>
+            <p class="subtitle">Guía de Desarrollo y Estructura del Proyecto</p>
+        </header>
+
+        <nav class="nav">
+            <ul>
+                <li><a href="#roadmap"><i class="fas fa-road"></i> Roadmap</a></li>
+                <li><a href="#stack"><i class="fas fa-layer-group"></i> Stack</a></li>
+                <li><a href="#estructura"><i class="fas fa-folder-tree"></i> Estructura</a></li>
+                <li><a href="#datos"><i class="fas fa-database"></i> Datos</a></li>
+                <li><a href="#variables"><i class="fas fa-cog"></i> Variables</a></li>
+                <li><a href="#endpoints"><i class="fas fa-plug"></i> Endpoints</a></li>
+                <li><a href="#estados"><i class="fas fa-sitemap"></i> Estados</a></li>
+                <li><a href="#ia"><i class="fas fa-brain"></i> IA</a></li>
+                <li><a href="#codigo"><i class="fas fa-code"></i> Código</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <section id="roadmap" class="section">
+                <h2><i class="fas fa-road"></i> Roadmap de Desarrollo</h2>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h3>M1 — Setup + WhatsApp (día 1–3)</h3>
+                        <ul>
+                            <li>Configurar FastAPI + Docker</li>
+                            <li>Webhook básico de WhatsApp Cloud API</li>
+                            <li>Verificación y recepción de mensajes</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h3>M2 — Google Sheets + Datos (día 4–6)</h3>
+                        <ul>
+                            <li>Integración con Google Sheets API</li>
+                            <li>Esquemas Pydantic para Productos, Clientes, Ventas</li>
+                            <li>CRUD básico y validaciones</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h3>M3 — IA + Function Calling (día 7–10)</h3>
+                        <ul>
+                            <li>Orquestador de IA con OpenAI/Anthropic</li>
+                            <li>Tools: buscar_productos, calcular_dosis, verificar_stock</li>
+                            <li>Prompts especializados para recomendaciones agronómicas</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h3>M4 — Estados + Flujo Conversacional (día 11–12)</h3>
+                        <ul>
+                            <li>Máquina de estados para conversaciones</li>
+                            <li>Manejo de contexto y sesiones</li>
+                            <li>Flujo completo: consulta → recomendación → pedido</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h3>M5 — Dashboard Web (día 13–14)</h3>
+                        <ul>
+                            <li>Panel administrativo con FastAPI + Jinja/HTMX</li>
+                            <li>Visualización de Clientes, Productos, Ventas y Conversaciones</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h3>M6 — Endurecimiento + Deploy (día 15–18)</h3>
+                        <ul>
+                            <li>Tests unitarios e integración</li>
+                            <li>Manejo de errores y reintentos</li>
+                            <li>Deploy en Render/Railway/Fly.io</li>
+                            <li>Webhook público con HTTPS</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert success">
+                    <strong>Extensiones futuras:</strong> embeddings para búsqueda semántica, catálogo con imágenes, multi-idioma, políticas de consentimiento/opt-in y métricas exhaustivas.
+                </div>
+            </section>
+
+            <section id="stack" class="section">
+                <h2><i class="fas fa-layer-group"></i> Stack Tecnológico</h2>
+                
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <h4><i class="fab fa-python"></i> Backend</h4>
+                        <p><strong>FastAPI</strong> (Python 3.11+)</p>
+                        <p>Framework moderno y rápido para APIs REST</p>
+                    </div>
+
+                    <div class="tech-item">
+                        <h4><i class="fas fa-brain"></i> Inteligencia Artificial</h4>
+                        <p><strong>OpenAI/Anthropic/Llama-API</strong></p>
+                        <p>Function calling para herramientas especializadas</p>
+                        <small>Variables: LLM_PROVIDER, LLM_MODEL, OPENAI_API_KEY</small>
+                    </div>
+
+                    <div class="tech-item">
+                        <h4><i class="fab fa-whatsapp"></i> Mensajería</h4>
+                        <p><strong>WhatsApp Cloud API</strong> (oficial)</p>
+                        <p>Integración directa con Meta</p>
+                        <small>Variables: WA_PHONE_NUMBER_ID, WA_ACCESS_TOKEN, WA_VERIFY_TOKEN</small>
+                    </div>
+
+                    <div class="tech-item">
+                        <h4><i class="fas fa-table"></i> Almacenamiento</h4>
+                        <p><strong>Google Sheets</strong></p>
+                        <p>gspread + google-auth + pydantic</p>
+                        <p>SQLite/archivos para sesiones y logs</p>
+                    </div>
+
+                    <div class="tech-item">
+                        <h4><i class="fab fa-docker"></i> Infraestructura</h4>
+                        <p><strong>Docker + Uvicorn</strong></p>
+                        <p>Render/Railway para hosting</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="estructura" class="section">
+                <h2><i class="fas fa-folder-tree"></i> Estructura del Proyecto</h2>
+                
+                <div class="tree-container">
+                    <div class="tree-item root">
+                        <i class="fas fa-folder-open"></i> agrosmart/
+                        <div class="tree-children">
+                            <div class="tree-item file">
+                                <i class="fas fa-file"></i> README.md
+                            </div>
+                            <div class="tree-item file">
+                                <i class="fas fa-file"></i> .env.example
+                            </div>
+                            <div class="tree-item file">
+                                <i class="fas fa-file-code"></i> pyproject.toml <span class="comment"># poetry o hatch</span>
+                            </div>
+                            <div class="tree-item file">
+                                <i class="fas fa-file-code"></i> docker-compose.yml <span class="comment"># opcional</span>
+                            </div>
+                            
+                            <div class="tree-item folder">
+                                <i class="fas fa-folder"></i> infra/
+                                <div class="tree-children">
+                                    <div class="tree-item folder">
+                                        <i class="fas fa-folder"></i> docker/
+                                        <div class="tree-children">
+                                            <div class="tree-item file">
+                                                <i class="fab fa-docker"></i> Dockerfile
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-item folder">
+                                        <i class="fas fa-folder"></i> scripts/
+                                        <div class="tree-children">
+                                            <div class="tree-item file">
+                                                <i class="fas fa-terminal"></i> run_local.sh
+                                            </div>
+                                            <div class="tree-item file">
+                                                <i class="fab fa-python"></i> seed_sheets.py <span class="comment"># importar Excel → Sheets</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tree-item folder">
+                                <i class="fas fa-folder"></i> app/
+                                <div class="tree-children">
+                                    <div class="tree-item file">
+                                        <i class="fab fa-python"></i> main.py <span class="comment"># FastAPI app</span>
+                                    </div>
+                                    <div class="tree-item file">
+                                        <i class="fab fa-python"></i> config.py <span class="comment"># Settings</span>
+                                    </div>
+                                    <div class="tree-item file">
+                                        <i class="fab fa-python"></i> deps.py <span class="comment"># dependencias</span>
+                                    </div>
+                                    
+                                    <div class="tree-item folder">
+                                        <i class="fas fa-folder"></i> schemas/ <span class="comment"># Pydantic models</span>
+                                        <div class="tree-children">
+                                            <div class="tree-item file"><i class="fab fa-python"></i> base.py</div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> customer.py</div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> product.py</div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> sale.py</div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> message.py</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tree-item folder">
+                                        <i class="fas fa-folder"></i> data/
+                                        <div class="tree-children">
+                                            <div class="tree-item file"><i class="fab fa-python"></i> sheets.py <span class="comment"># cliente Google Sheets</span></div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> repository.py <span class="comment"># CRUD</span></div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> validators.py <span class="comment"># reglas de datos</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tree-item folder">
+                                        <i class="fas fa-folder"></i> whatsapp/
+                                        <div class="tree-children">
+                                            <div class="tree-item file"><i class="fab fa-python"></i> webhook.py <span class="comment"># GET verify + POST mensajes</span></div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> client.py <span class="comment"># envíos salientes</span></div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> state.py <span class="comment"># máquina de estados</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tree-item folder">
+                                        <i class="fas fa-folder"></i> ai/
+                                        <div class="tree-children">
+                                            <div class="tree-item file"><i class="fab fa-python"></i> orchestrator.py <span class="comment"># bucle tools ↔ LLM</span></div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> tools.py <span class="comment"># funciones IA</span></div>
+                                            <div class="tree-item folder">
+                                                <i class="fas fa-folder"></i> prompts/
+                                                <div class="tree-children">
+                                                    <div class="tree-item file"><i class="fab fa-markdown"></i> recommend.md <span class="comment"># plantilla prompt</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tree-item folder">
+                                        <i class="fas fa-folder"></i> services/
+                                        <div class="tree-children">
+                                            <div class="tree-item file"><i class="fab fa-python"></i> recommendations.py <span class="comment"># lógica negocio</span></div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> orders.py <span class="comment"># crear pedido</span></div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> customers.py <span class="comment"># alta cliente</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tree-item folder">
+                                        <i class="fas fa-folder"></i> storage/
+                                        <div class="tree-children">
+                                            <div class="tree-item file"><i class="fab fa-python"></i> sessions.py <span class="comment"># estado</span></div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> logs.py <span class="comment"># trazas</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tree-item folder">
+                                        <i class="fas fa-folder"></i> utils/
+                                        <div class="tree-children">
+                                            <div class="tree-item file"><i class="fab fa-python"></i> text.py <span class="comment"># normalización</span></div>
+                                            <div class="tree-item file"><i class="fab fa-python"></i> math.py <span class="comment"># cálculos</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tree-item folder">
+                                <i class="fas fa-folder"></i> tests/
+                                <div class="tree-children">
+                                    <div class="tree-item file"><i class="fab fa-python"></i> test_webhook.py</div>
+                                    <div class="tree-item file"><i class="fab fa-python"></i> test_tools.py</div>
+                                    <div class="tree-item file"><i class="fab fa-python"></i> test_repository.py</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="datos" class="section">
+                <h2><i class="fas fa-database"></i> Modelo de Datos (Google Sheets)</h2>
+                
+                <div class="alert">
+                    <strong>Nota:</strong> Una spreadsheet con <strong>tres pestañas</strong> mínimas. Los encabezados deben ir en la fila 1.
+                </div>
+
+                <h3>Productos</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>nombre</th>
+                                <th>categoria</th>
+                                <th>plagas</th>
+                                <th>cultivo_objetivo</th>
+                                <th>principio_activo</th>
+                                <th>concentracion</th>
+                                <th>presentacion</th>
+                                <th>dosis_texto</th>
+                                <th>dosis_por_ha</th>
+                                <th>stock</th>
+                                <th>precio</th>
+                                <th>moneda</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>P-001</td>
+                                <td>Insecticida X</td>
+                                <td>insecticida</td>
+                                <td>arañas;ácaros</td>
+                                <td>maíz;frutales</td>
+                                <td>Afoxalaner</td>
+                                <td>10%</td>
+                                <td>sobre 25g</td>
+                                <td>2 sobres/galón</td>
+                                <td>0.8</td>
+                                <td>100</td>
+                                <td>25.00</td>
+                                <td>USD</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Clientes</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>nombre</th>
+                                <th>telefono</th>
+                                <th>cultivo</th>
+                                <th>hectareas</th>
+                                <th>ubicacion</th>
+                                <th>consentimiento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>C-001</td>
+                                <td>Juan Pérez</td>
+                                <td>+51XXXXXXXXX</td>
+                                <td>maíz</td>
+                                <td>3</td>
+                                <td>Chiclayo</td>
+                                <td>sí</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Ventas</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>cliente_id</th>
+                                <th>producto_id</th>
+                                <th>cantidad</th>
+                                <th>precio_unit</th>
+                                <th>moneda</th>
+                                <th>estado</th>
+                                <th>fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>V-001</td>
+                                <td>C-001</td>
+                                <td>P-001</td>
+                                <td>8</td>
+                                <td>25.00</td>
+                                <td>USD</td>
+                                <td>pendiente</td>
+                                <td>2025-09-05</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="variables" class="section">
+                <h2><i class="fas fa-cog"></i> Variables de Entorno</h2>
+                
+                <div class="code-block" data-lang="env">
+# WhatsApp Cloud API
+WA_PHONE_NUMBER_ID=
+WA_ACCESS_TOKEN=
+WA_VERIFY_TOKEN=
+
+# IA
+LLM_PROVIDER=openai
+LLM_MODEL=gpt-4o-mini
+OPENAI_API_KEY=
+
+# Google Sheets
+GOOGLE_PROJECT_ID=
+GOOGLE_SERVICE_ACCOUNT_JSON_PATH=./infra/keys/service_account.json
+SHEETS_SPREADSHEET_ID=
+
+# App
+APP_BASE_URL=https://tu-dominio.app
+ENV=dev
+LOG_LEVEL=INFO
+                </div>
+            </section>
+
+            <section id="endpoints" class="section">
+                <h2><i class="fas fa-plug"></i> FastAPI - Endpoints Clave</h2>
+                
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <h4><i class="fas fa-check-circle"></i> /whatsapp/webhook (GET)</h4>
+                        <p>Responde verificación de Meta</p>
+                        <small>Parámetros: hub.mode, hub.verify_token, hub.challenge</small>
+                    </div>
+
+                    <div class="tech-item">
+                        <h4><i class="fas fa-envelope"></i> /whatsapp/webhook (POST)</h4>
+                        <p>Recibe mensajes entrantes</p>
+                        <ul style="margin-top: 0.5rem; font-size: 0.9rem;">
+                            <li>Extrae from, text, wa_message_id</li>
+                            <li>Busca/crea cliente por teléfono</li>
+                            <li>Avanza estado de conversación</li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-item">
+                        <h4><i class="fas fa-heartbeat"></i> /health y /metrics</h4>
+                        <p>Salud del servicio y métricas básicas</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="estados" class="section">
+                <h2><i class="fas fa-sitemap"></i> Máquina de Estados</h2>
+                
+                <div class="state-diagram">
+                    <div class="state-flow">
+                        <span class="state">IDLE</span>
+                        <span class="arrow">→</span>
+                        <span class="state">INTAKE</span>
+                        <span class="arrow">→</span>
+                        <span class="state">CAPTURA_DATOS</span>
+                        <span class="arrow">→</span>
+                        <span class="state">RECOMENDANDO</span>
+                        <span class="arrow">→</span>
+                        <span class="state">CONFIRMACION</span>
+                        <span class="arrow">→</span>
+                        <span class="state">PEDIDO_CREADO</span>
+                        <span class="arrow">→</span>
+                        <span class="state">IDLE</span>
+                    </div>
+                </div>
+
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <h4>INTAKE</h4>
+                        <p>Detectar intención (plaga, cultivo, hectáreas)</p>
+                    </div>
+                    <div class="tech-item">
+                        <h4>CAPTURA_DATOS</h4>
+                        <p>Pedir lo que falte (ej: hectáreas si no las dijo)</p>
+                    </div>
+                    <div class="tech-item">
+                        <h4>RECOMENDANDO</h4>
+                        <p>IA orquesta tools y redacta recomendación</p>
+                    </div>
+                    <div class="tech-item">
+                        <h4>CONFIRMACION</h4>
+                        <p>"¿Deseas confirmar la compra?"</p>
+                    </div>
+                    <div class="tech-item">
+                        <h4>PEDIDO_CREADO</h4>
+                        <p>Crear registro en Ventas y notificar</p>
+                    </div>
+                    <div class="tech-item">
+                        <h4>ESCALADO_HUMANO</h4>
+                        <p>Si no hay producto/stock o duda técnica</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="ia" class="section">
+                <h2><i class="fas fa-brain"></i> Orquestador de IA</h2>
+                
+                <h3>Herramientas expuestas al modelo</h3>
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <h4><i class="fas fa-search"></i> buscar_productos</h4>
+                        <p><code>buscar_productos(plaga, cultivo) → [Producto]</code></p>
+                    </div>
+                    <div class="tech-item">
+                        <h4><i class="fas fa-warehouse"></i> verificar_stock</h4>
+                        <p><code>verificar_stock(producto_id) → bool|int</code></p>
+                    </div>
+                    <div class="tech-item">
+                        <h4><i class="fas fa-dollar-sign"></i> obtener_precio</h4>
+                        <p><code>obtener_precio(producto_id) → {precio, moneda}</code></p>
+                    </div>
+                    <div class="tech-item">
+                        <h4><i class="fas fa-calculator"></i> calcular_dosis</h4>
+                        <p><code>calcular_dosis(producto, hectareas, presentacion) → {cantidad_sugerida, texto}</code></p>
+                    </div>
+                    <div class="tech-item">
+                        <h4><i class="fas fa-clipboard-list"></i> registrar_recomendacion</h4>
+                        <p><code>registrar_recomendacion(cliente_id, productos, costo_estimado) → recomendacion_id</code></p>
+                    </div>
+                </div>
+
+                <h3>Plantilla de prompt</h3>
+                <div class="code-block" data-lang="markdown">
+[SYSTEM]
+Eres un Ingeniero Agrónomo. Responde en español claro y profesional.
+No inventes productos, dosis ni precios: solo usa lo que devuelven las herramientas.
+Si faltan datos, pídelos con una sola pregunta concreta.
+Incluye: producto principal, principio activo, coadyuvantes, dosis y estimación de costo.
+
+[USER]
+Cliente: {nombre} ({telefono}) – {hectareas} ha de {cultivo}
+Consulta: {texto}
+Contexto: vas a poder llamar herramientas para buscar catálogo y calcular dosis.
+                </div>
+            </section>
+
+            <section id="codigo" class="section">
+                <h2><i class="fas fa-code"></i> Esqueletos de Código</h2>
+                
+                <div class="code-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="main">main.py</button>
+                        <button class="tab-btn" data-tab="webhook">webhook.py</button>
+                        <button class="tab-btn" data-tab="config">config.py</button>
+                        <button class="tab-btn" data-tab="tools">tools.py</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="main">
+                        <div class="code-window">
+                            <div class="window-header">
+                                <div class="window-controls">
+                                    <span class="control close"></span>
+                                    <span class="control minimize"></span>
+                                    <span class="control maximize"></span>
+                                </div>
+                                <div class="window-title">app/main.py</div>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">from fastapi import FastAPI
+from app.whatsapp.webhook import router as wa_router
+
+app = FastAPI(title="AgroSmart")
+app.include_router(wa_router, prefix="/whatsapp")
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="webhook">
+                        <div class="code-window">
+                            <div class="window-header">
+                                <div class="window-controls">
+                                    <span class="control close"></span>
+                                    <span class="control minimize"></span>
+                                    <span class="control maximize"></span>
+                                </div>
+                                <div class="window-title">app/whatsapp/webhook.py</div>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">from fastapi import APIRouter, Request, HTTPException
+from app.config import settings
+from app.whatsapp.client import send_text
+from app.whatsapp.state import advance_state
+
+router = APIRouter()
+
+@router.get("/webhook")
+async def verify(mode: str | None = None, hub_challenge: str | None = None, 
+                hub_verify_token: str | None = None):
+    if mode == "subscribe" and hub_verify_token == settings.WA_VERIFY_TOKEN:
+        return int(hub_challenge or 0)
+    raise HTTPException(status_code=403, detail="verification failed")
+
+@router.post("/webhook")
+async def receive(request: Request):
+    payload = await request.json()
+    entry = payload.get("entry", [{}])[0]
+    changes = entry.get("changes", [{}])[0]
+    value = changes.get("value", {})
+    messages = value.get("messages", [])
+    if not messages:
+        return {"status": "ignored"}
+    
+    msg = messages[0]
+    from_number = msg["from"]
+    text = msg.get("text", {}).get("body", "")
+
+    reply = await advance_state(from_number, text)
+    await send_text(from_number, reply)
+    return {"status": "ok"}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="config">
+                        <div class="code-window">
+                            <div class="window-header">
+                                <div class="window-controls">
+                                    <span class="control close"></span>
+                                    <span class="control minimize"></span>
+                                    <span class="control maximize"></span>
+                                </div>
+                                <div class="window-title">app/config.py</div>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    # WhatsApp Cloud API
+    WA_PHONE_NUMBER_ID: str
+    WA_ACCESS_TOKEN: str
+    WA_VERIFY_TOKEN: str
+    
+    # IA
+    LLM_PROVIDER: str = "openai"
+    LLM_MODEL: str = "gpt-4o-mini"
+    OPENAI_API_KEY: str
+    
+    # Google Sheets
+    GOOGLE_PROJECT_ID: str
+    GOOGLE_SERVICE_ACCOUNT_JSON_PATH: str
+    SHEETS_SPREADSHEET_ID: str
+    
+    # App
+    APP_BASE_URL: str
+    ENV: str = "dev"
+    LOG_LEVEL: str = "INFO"
+    
+    class Config:
+        env_file = ".env"
+
+settings = Settings()</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="tools">
+                        <div class="code-window">
+                            <div class="window-header">
+                                <div class="window-controls">
+                                    <span class="control close"></span>
+                                    <span class="control minimize"></span>
+                                    <span class="control maximize"></span>
+                                </div>
+                                <div class="window-title">app/ai/tools.py</div>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">from typing import List, Dict, Any
+from app.data.repository import ProductRepository
+
+def buscar_productos(plaga: str, cultivo: str) -> List[Dict[str, Any]]:
+    """Busca productos por plaga y cultivo objetivo"""
+    repo = ProductRepository()
+    return repo.search_by_pest_and_crop(plaga, cultivo)
+
+def verificar_stock(producto_id: str) -> int:
+    """Verifica stock disponible de un producto"""
+    repo = ProductRepository()
+    product = repo.get_by_id(producto_id)
+    return product.stock if product else 0
+
+def calcular_dosis(producto_id: str, hectareas: float) -> Dict[str, Any]:
+    """Calcula dosis requerida para las hectáreas especificadas"""
+    repo = ProductRepository()
+    product = repo.get_by_id(producto_id)
+    
+    if not product:
+        return {"error": "Producto no encontrado"}
+    
+    cantidad_total = product.dosis_por_ha * hectareas
+    
+    return {
+        "cantidad_sugerida": cantidad_total,
+        "unidad": product.unidad_dosis_ha,
+        "texto": f"{cantidad_total} {product.unidad_dosis_ha} para {hectareas} ha"
+    }</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
